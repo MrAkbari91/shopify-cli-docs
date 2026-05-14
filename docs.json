@@ -1,0 +1,61 @@
+{
+  "meta": {
+    "title": "Shopify CLI Docs",
+    "version": "3.x",
+    "updated": "2025"
+  },
+  "nav": [
+    { "group": "Getting Started", "items": [
+      { "id": "intro", "label": "Introduction", "icon": "◈", "badge": null },
+      { "id": "installation", "label": "Installation", "icon": "⬇", "badge": null },
+      { "id": "auth", "label": "Authentication", "icon": "🔑", "badge": null },
+      { "id": "store-connect", "label": "Store Connection", "icon": "🔗", "badge": null }
+    ]},
+    { "group": "Theme Commands", "items": [
+      { "id": "theme-dev", "label": "Dev Server", "icon": "⚡", "badge": "hot" },
+      { "id": "theme-pull-push", "label": "Pull & Push", "icon": "↕", "badge": null },
+      { "id": "theme-manage", "label": "Manage Themes", "icon": "◧", "badge": null },
+      { "id": "theme-check", "label": "Theme Check", "icon": "✓", "badge": null },
+      { "id": "shopifyignore", "label": ".shopifyignore", "icon": "⊘", "badge": null }
+    ]},
+    { "group": "General Commands", "items": [
+      { "id": "general-cmds", "label": "General Commands", "icon": "⌘", "badge": null },
+      { "id": "flags", "label": "Flags & Options", "icon": "⚑", "badge": null }
+    ]},
+    { "group": "Workflows", "items": [
+      { "id": "local-dev", "label": "Local Development", "icon": "💻", "badge": null },
+      { "id": "git-workflow", "label": "Git Workflow", "icon": "⑂", "badge": null },
+      { "id": "conflicts", "label": "Conflict Resolution", "icon": "⚠", "badge": null },
+      { "id": "deployment", "label": "Deployment", "icon": "🚀", "badge": null },
+      { "id": "collaboration", "label": "Collaboration", "icon": "👥", "badge": null }
+    ]},
+    { "group": "Reference", "items": [
+      { "id": "debugging", "label": "Debugging", "icon": "🐛", "badge": null },
+      { "id": "best-practices", "label": "Best Practices", "icon": "★", "badge": null },
+      { "id": "vscode", "label": "VS Code Setup", "icon": "◻", "badge": null },
+      { "id": "cheatsheet", "label": "Cheatsheet", "icon": "⚡", "badge": "new" }
+    ]}
+  ],
+  "commands": [
+    { "cmd": "shopify version", "desc": "Check installed CLI version", "cat": "general" },
+    { "cmd": "shopify login", "desc": "Authenticate with Shopify", "cat": "auth" },
+    { "cmd": "shopify logout", "desc": "Log out from Shopify", "cat": "auth" },
+    { "cmd": "shopify whoami", "desc": "Show current authenticated user", "cat": "auth" },
+    { "cmd": "shopify theme dev", "desc": "Start local dev server with hot reload", "cat": "theme" },
+    { "cmd": "shopify theme pull", "desc": "Download theme files from store", "cat": "theme" },
+    { "cmd": "shopify theme push", "desc": "Upload theme files to store", "cat": "theme" },
+    { "cmd": "shopify theme push --unpublished", "desc": "Push as new unpublished theme", "cat": "theme" },
+    { "cmd": "shopify theme list", "desc": "List all themes in store", "cat": "theme" },
+    { "cmd": "shopify theme publish", "desc": "Publish theme as live theme", "cat": "theme" },
+    { "cmd": "shopify theme check", "desc": "Lint and validate theme code", "cat": "theme" },
+    { "cmd": "shopify theme check --auto-correct", "desc": "Fix issues automatically", "cat": "theme" },
+    { "cmd": "shopify theme open", "desc": "Open theme preview in browser", "cat": "theme" },
+    { "cmd": "shopify theme editor", "desc": "Open Shopify theme editor", "cat": "theme" },
+    { "cmd": "shopify theme delete --theme=ID", "desc": "Delete a theme by ID", "cat": "theme" },
+    { "cmd": "shopify theme share", "desc": "Create shareable theme preview link", "cat": "theme" },
+    { "cmd": "shopify theme rename --name=\"Name\"", "desc": "Rename a theme", "cat": "theme" },
+    { "cmd": "shopify theme package", "desc": "Package theme as zip for upload", "cat": "theme" },
+    { "cmd": "npm install -g @shopify/cli @shopify/theme", "desc": "Install Shopify CLI globally", "cat": "install" },
+    { "cmd": "npm update -g @shopify/cli @shopify/theme", "desc": "Update Shopify CLI", "cat": "install" }
+  ]
+}

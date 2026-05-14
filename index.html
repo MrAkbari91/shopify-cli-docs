@@ -1,0 +1,1732 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shopify CLI Docs — Complete Theme Developer Reference</title>
+<meta name="description" content="Premium documentation for Shopify CLI, theme development, Git workflows, conflict resolution, deployment, and real-world Shopify development.">
+<meta name="theme-color" content="#008060">
+<link rel="canonical" href="/">
+<!-- Preload fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@300;400;500;600;700;800&family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<!-- Styles -->
+<link rel="stylesheet" href="assets/css/style.css">
+<link rel="stylesheet" href="assets/css/responsive.css">
+<!-- Theme (inline to prevent FOUC) -->
+<script>
+  (function(){
+    const saved = localStorage.getItem('shopify-docs-theme');
+    const sys = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    document.documentElement.setAttribute('data-theme', saved && saved !== 'system' ? saved : sys);
+  })();
+</script>
+</head>
+<body>
+
+<!-- Reading progress bar -->
+<div id="progress-bar" role="progressbar" aria-hidden="true"></div>
+
+<!-- Mobile overlay -->
+<div class="mob-overlay" id="mobOverlay"></div>
+
+<!-- ========================================================
+     SEARCH MODAL
+     ======================================================== -->
+<div class="search-modal-backdrop" id="searchBackdrop" role="dialog" aria-modal="true" aria-label="Search documentation">
+  <div class="search-modal">
+    <div class="search-modal-input-wrap">
+      <span class="search-modal-icon">⌕</span>
+      <input
+        type="text"
+        class="search-modal-input"
+        id="searchModalInput"
+        placeholder="Search commands, sections, flags…"
+        autocomplete="off"
+        spellcheck="false"
+      >
+      <button class="search-modal-esc" onclick="SearchEngine.close()">esc</button>
+    </div>
+    <div class="search-results" id="searchResults"></div>
+    <div class="search-modal-footer">
+      <span class="search-hint"><span class="kbd">↑↓</span> navigate</span>
+      <span class="search-hint"><span class="kbd">↵</span> select</span>
+      <span class="search-hint"><span class="kbd">esc</span> close</span>
+      <span style="margin-left:auto;font-size:11px;color:var(--text-muted)">Shopify CLI Docs</span>
+    </div>
+  </div>
+</div>
+
+<!-- ========================================================
+     APP SHELL
+     ======================================================== -->
+<div class="app-shell">
+
+  <!-- ======================================================
+       SIDEBAR
+       ====================================================== -->
+  <aside class="sidebar" id="sidebar" role="navigation" aria-label="Documentation navigation">
+
+    <!-- Brand -->
+    <div class="sidebar-brand">
+      <div class="brand-row">
+        <div class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M15.337 2.085a1.1 1.1 0 00-.405.086L6.6 5.417A1.1 1.1 0 006 6.438v11.124a1.1 1.1 0 00.6 1.021l8.332 3.246a1.1 1.1 0 001.136-.172l1.932-1.736V7.83l-1.932-1.736a1.1 1.1 0 00-.731-.009zM12 8a4 4 0 110 8 4 4 0 010-8zm0 1.5a2.5 2.5 0 100 5 2.5 2.5 0 000-5z"/>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <div class="brand-name">Shopify CLI Docs</div>
+          <div class="brand-version">v3.x · Theme Dev Guide</div>
+        </div>
+      </div>
+
+      <!-- Sidebar search -->
+      <div class="sidebar-search">
+        <span class="search-prefix-icon">⌕</span>
+        <input
+          type="text"
+          id="sidebarSearch"
+          placeholder="Search…"
+          autocomplete="off"
+          aria-label="Filter navigation"
+        >
+        <div class="search-shortcut">
+          <span class="kbd kb-cmd">⌘</span><span class="kbd">K</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="sidebar-nav" id="sidebarNav">
+
+      <div class="nav-group">
+        <div class="nav-group-label">Getting Started</div>
+        <a class="nav-item active" href="#intro"><span class="nav-icon">◈</span>Introduction</a>
+        <a class="nav-item" href="#installation"><span class="nav-icon">⬇</span>Installation</a>
+        <a class="nav-item" href="#auth"><span class="nav-icon">🔑</span>Authentication</a>
+        <a class="nav-item" href="#store-connect"><span class="nav-icon">🔗</span>Store Connection</a>
+      </div>
+
+      <div class="nav-group">
+        <div class="nav-group-label">Theme Commands</div>
+        <a class="nav-item" href="#theme-dev"><span class="nav-icon">⚡</span>Dev Server <span class="nav-badge hot">hot</span></a>
+        <a class="nav-item" href="#theme-pull-push"><span class="nav-icon">↕</span>Pull &amp; Push</a>
+        <a class="nav-item" href="#theme-manage"><span class="nav-icon">◧</span>Manage Themes</a>
+        <a class="nav-item" href="#theme-check"><span class="nav-icon">✓</span>Theme Check</a>
+        <a class="nav-item" href="#shopifyignore"><span class="nav-icon">⊘</span>.shopifyignore</a>
+      </div>
+
+      <div class="nav-group">
+        <div class="nav-group-label">General Commands</div>
+        <a class="nav-item" href="#general-cmds"><span class="nav-icon">⌘</span>General Commands</a>
+        <a class="nav-item" href="#flags"><span class="nav-icon">⚑</span>Flags &amp; Options</a>
+      </div>
+
+      <div class="nav-group">
+        <div class="nav-group-label">Workflows</div>
+        <a class="nav-item" href="#local-dev"><span class="nav-icon">💻</span>Local Development</a>
+        <a class="nav-item" href="#git-workflow"><span class="nav-icon">⑂</span>Git Workflow</a>
+        <a class="nav-item" href="#conflicts"><span class="nav-icon">⚠</span>Conflict Resolution</a>
+        <a class="nav-item" href="#deployment"><span class="nav-icon">🚀</span>Deployment</a>
+        <a class="nav-item" href="#collaboration"><span class="nav-icon">👥</span>Collaboration</a>
+      </div>
+
+      <div class="nav-group">
+        <div class="nav-group-label">Reference</div>
+        <a class="nav-item" href="#debugging"><span class="nav-icon">🐛</span>Debugging</a>
+        <a class="nav-item" href="#best-practices"><span class="nav-icon">★</span>Best Practices</a>
+        <a class="nav-item" href="#vscode"><span class="nav-icon">◻</span>VS Code Setup</a>
+        <a class="nav-item" href="#cheatsheet"><span class="nav-icon">⚡</span>Cheatsheet <span class="nav-badge new">new</span></a>
+      </div>
+
+    </nav>
+
+    <!-- Footer -->
+    <div class="sidebar-footer">
+      <div class="footer-meta">
+        <strong>Shopify CLI</strong><br>
+        Open source · MIT
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button class="theme-opt" data-theme="light" title="Light mode">☀️</button>
+        <button class="theme-opt" data-theme="system" title="System">⚙</button>
+        <button class="theme-opt active" data-theme="dark" title="Dark mode">🌙</button>
+      </div>
+    </div>
+
+  </aside>
+
+  <!-- ======================================================
+       MAIN CONTENT
+       ====================================================== -->
+  <div class="main">
+
+    <!-- Topbar -->
+    <header class="topbar" role="banner">
+      <button class="mob-menu-btn" id="mobMenuBtn" aria-label="Open navigation" aria-expanded="false">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+          <path d="M2 4h14M2 9h14M2 14h14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+        </svg>
+      </button>
+
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <span class="bc-home">Shopify CLI</span>
+        <span class="bc-sep">›</span>
+        <span class="bc-current" id="bcCurrent">Introduction</span>
+      </nav>
+
+      <div class="topbar-right">
+        <!-- Search trigger -->
+        <button class="topbar-btn" data-search-open aria-label="Search documentation">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6">
+            <circle cx="6.5" cy="6.5" r="4.5"/>
+            <path d="M10 10l3 3" stroke-linecap="round"/>
+          </svg>
+          <span class="search-trigger-text" style="color:var(--text-muted)">Search…</span>
+          <span class="search-trigger-kbd">
+            <span class="kbd kb-cmd">⌘</span><span class="kbd">K</span>
+          </span>
+        </button>
+
+        <a href="https://shopify.dev/docs/api/shopify-cli" target="_blank" rel="noopener" class="topbar-btn github-btn" aria-label="Official docs">
+          <svg viewBox="0 0 16 16" fill="currentColor">
+            <path d="M6 3h4l-4 10h4"/>
+          </svg>
+          <span>Official Docs</span>
+        </a>
+      </div>
+    </header>
+
+    <!-- Content -->
+    <main class="content" id="mainContent">
+
+      <!-- ====================================================
+           HERO
+           ==================================================== -->
+      <div class="hero reveal">
+        <div class="hero-eyebrow">
+          <span class="hero-eyebrow-dot"></span>
+          Shopify CLI v3 · Complete Reference
+        </div>
+        <h1 class="hero-title">
+          The <span class="accent-word">complete</span> Shopify<br>developer reference
+        </h1>
+        <p class="hero-desc">
+          Everything you need to build, deploy, and collaborate on Shopify themes —
+          CLI commands, Git workflows, conflict resolution, and real-world patterns.
+        </p>
+        <div class="hero-actions">
+          <a href="#installation" class="btn-primary">
+            Get started
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </a>
+          <button class="btn-secondary" data-search-open>
+            <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.6">
+              <circle cx="5.5" cy="5.5" r="4"/>
+              <path d="M9 9l2.5 2.5" stroke-linecap="round"/>
+            </svg>
+            Search commands
+          </button>
+        </div>
+        <div class="hero-stats stagger">
+          <div class="stat-item"><div class="stat-value">20+</div><div class="stat-label">CLI Commands</div></div>
+          <div class="stat-item"><div class="stat-value">15</div><div class="stat-label">Doc Sections</div></div>
+          <div class="stat-item"><div class="stat-value">∞</div><div class="stat-label">Workflows</div></div>
+          <div class="stat-item"><div class="stat-value">v3</div><div class="stat-label">Latest CLI</div></div>
+        </div>
+      </div>
+
+      <!-- ====================================================
+           1. INTRODUCTION
+           ==================================================== -->
+      <section class="doc-section reveal" id="intro">
+        <div class="section-head">
+          <div class="section-icon-box">◈</div>
+          <div class="section-meta">
+            <div class="section-eyebrow">Section 01</div>
+            <h2 class="section-title">Introduction</h2>
+            <p class="section-desc">What Shopify CLI is, why it exists, and what you can do with it as a theme developer.</p>
+          </div>
+        </div>
+
+        <p>Shopify CLI is an open-source command-line tool that streamlines Shopify theme and app development. Instead of manually uploading files through the browser editor, CLI gives you a live development server, file sync, Git-style workflows, and full theme lifecycle management from your terminal.</p>
+
+        <div class="card-grid stagger">
+          <div class="card">
+            <div class="card-icon">⚡</div>
+            <div class="card-title">Hot Reloading</div>
+            <div class="card-desc">See changes instantly with <code>shopify theme dev</code> — no manual uploads.</div>
+          </div>
+          <div class="card">
+            <div class="card-icon">↕</div>
+            <div class="card-title">Theme Sync</div>
+            <div class="card-desc">Pull live theme files down and push your local changes back up seamlessly.</div>
+          </div>
+          <div class="card">
+            <div class="card-icon">✓</div>
+            <div class="card-title">Built-in Linting</div>
+            <div class="card-desc">Catch Liquid errors before they go live with <code>shopify theme check</code>.</div>
+          </div>
+          <div class="card">
+            <div class="card-icon">⑂</div>
+            <div class="card-title">Git-Friendly</div>
+            <div class="card-desc">Combine CLI with Git for branching, conflict resolution, and team workflows.</div>
+          </div>
+        </div>
+
+        <h3>Why use Shopify CLI over the browser editor?</h3>
+        <p>The browser theme editor is great for content changes, but for serious development it has real limitations. With CLI you get a proper code editor, version control, team collaboration, automated linting, and repeatable deployment pipelines. You work locally, keep Git history, and deploy with confidence.</p>
+
+        <div class="callout tip">
+          <span class="callout-icon">💡</span>
+          <div class="callout-content">
+            <div class="callout-title">Tip</div>
+            <div class="callout-body">Shopify CLI v3 uses Node.js under the hood and is distributed via npm. It replaces the older Ruby-based CLI v2 with significantly faster performance and a cleaner API surface.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================================================
+           2. INSTALLATION
+           ==================================================== -->
+      <section class="doc-section reveal" id="installation">
+        <div class="section-head">
+          <div class="section-icon-box">⬇</div>
+          <div class="section-meta">
+            <div class="section-eyebrow">Section 02</div>
+            <h2 class="section-title">Installation</h2>
+            <p class="section-desc">Get Shopify CLI installed on macOS, Windows, or Linux in minutes.</p>
+          </div>
+        </div>
+
+        <h3>Prerequisites</h3>
+        <p>Before installing, make sure you have the following:</p>
+        <ul>
+          <li><strong>Node.js 18.20+</strong> — Download from <a href="https://nodejs.org" target="_blank" rel="noopener">nodejs.org</a> or use <a href="https://github.com/nvm-sh/nvm" target="_blank" rel="noopener">nvm</a></li>
+          <li><strong>npm 8+</strong> — Comes with Node. Check with <code>npm -v</code></li>
+          <li><strong>Git</strong> — Recommended for version control workflows</li>
+          <li><strong>A Shopify Partner account</strong> — Free at <a href="https://partners.shopify.com" target="_blank" rel="noopener">partners.shopify.com</a></li>
+        </ul>
+
+        <h3>Install via npm (recommended)</h3>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="window-dots"><span class="window-dot"></span><span class="window-dot"></span><span class="window-dot"></span></div>
+            <span class="code-label">Terminal</span>
+            <button class="copy-btn" aria-label="Copy code">
+              <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="1" y="3" width="7" height="7" rx="1.2"/><path d="M3 3V2a1 1 0 011-1h5a1 1 0 011 1v6a1 1 0 01-1 1H8"/></svg>
+              Copy
+            </button>
+          </div>
+          <pre><code><span class="t-cmt"># Install Shopify CLI and theme components globally</span>
+<span class="t-cmd">npm install -g @shopify/cli @shopify/theme</span>
+
+<span class="t-cmt"># Verify installation</span>
+<span class="t-cmd">shopify version</span></code></pre>
+        </div>
+
+        <h3>Install via Homebrew (macOS)</h3>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="window-dots"><span class="window-dot"></span><span class="window-dot"></span><span class="window-dot"></span></div>
+            <span class="code-label">macOS Terminal</span>
+            <button class="copy-btn">
+              <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="1" y="3" width="7" height="7" rx="1.2"/><path d="M3 3V2a1 1 0 011-1h5a1 1 0 011 1v6a1 1 0 01-1 1H8"/></svg>
+              Copy
+            </button>
+          </div>
+          <pre><code><span class="t-cmd">brew tap shopify/shopify</span>
+<span class="t-cmd">brew install shopify-cli</span></code></pre>
+        </div>
+
+        <h3>Update CLI</h3>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="window-dots"><span class="window-dot"></span><span class="window-dot"></span><span class="window-dot"></span></div>
+            <span class="code-label">Terminal</span>
+            <button class="copy-btn">
+              <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="1" y="3" width="7" height="7" rx="1.2"/><path d="M3 3V2a1 1 0 011-1h5a1 1 0 011 1v6a1 1 0 01-1 1H8"/></svg>
+              Copy
+            </button>
+          </div>
+          <pre><code><span class="t-cmd">npm update -g @shopify/cli @shopify/theme</span></code></pre>
+        </div>
+
+        <div class="callout warn">
+          <span class="callout-icon">⚠️</span>
+          <div class="callout-content">
+            <div class="callout-title">Windows Users</div>
+            <div class="callout-body">On Windows, use PowerShell or Windows Terminal. WSL2 (Windows Subsystem for Linux) is strongly recommended for the best experience. Avoid Git Bash for running Shopify CLI as it can cause path issues.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================================================
+           3. AUTHENTICATION
+           ==================================================== -->
+      <section class="doc-section reveal" id="auth">
+        <div class="section-head">
+          <div class="section-icon-box">🔑</div>
+          <div class="section-meta">
+            <div class="section-eyebrow">Section 03</div>
+            <h2 class="section-title">Authentication</h2>
+            <p class="section-desc">Connect Shopify CLI to your Shopify account securely.</p>
+          </div>
+        </div>
+
+        <div class="code-block">
+          <div class="code-header">
+            <div class="window-dots"><span class="window-dot"></span><span class="window-dot"></span><span class="window-dot"></span></div>
+            <span class="code-label">Auth Commands</span>
+            <button class="copy-btn">
+              <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="1" y="3" width="7" height="7" rx="1.2"/><path d="M3 3V2a1 1 0 011-1h5a1 1 0 011 1v6a1 1 0 01-1 1H8"/></svg>
+              Copy
+            </button>
+          </div>
+          <pre><code><span class="t-cmt"># Log in (opens browser for OAuth)</span>
+<span class="t-cmd">shopify auth login</span>
+
+<span class="t-cmt"># Log in to a specific store</span>
+<span class="t-cmd">shopify auth login <span class="t-flag">--store</span> <span class="t-str">your-store.myshopify.com</span></span>
+
+<span class="t-cmt"># Check who you're logged in as</span>
+<span class="t-cmd">shopify whoami</span>
+
+<span class="t-cmt"># Log out</span>
+<span class="t-cmd">shopify auth logout</span></code></pre>
+        </div>
+
+        <p>Authentication uses OAuth — the CLI opens your browser, you approve access, and a token is stored locally in your system keychain. You never need to paste API keys manually.</p>
+
+        <div class="callout info">
+          <span class="callout-icon">ℹ️</span>
+          <div class="callout-content">
+            <div class="callout-title">CI/CD Environments</div>
+            <div class="callout-body">For headless environments (GitHub Actions, CI pipelines), use the <code>SHOPIFY_CLI_PARTNERS_TOKEN</code> environment variable with a Shopify Partners API token instead of browser-based OAuth.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================================================
+           4. STORE CONNECTION
+           ==================================================== -->
+      <section class="doc-section reveal" id="store-connect">
+        <div class="section-head">
+          <div class="section-icon-box">🔗</div>
+          <div class="section-meta">
+            <div class="section-eyebrow">Section 04</div>
+            <h2 class="section-title">Store Connection</h2>
+            <p class="section-desc">Connect to a specific Shopify store and manage theme targets.</p>
+          </div>
+        </div>
+
+        <p>Most CLI commands accept a <code>--store</code> flag. You can also set a default store by running commands from a directory that already has a <code>.shopify</code> config, or by using environment variables.</p>
+
+        <div class="code-block">
+          <div class="code-header">
+            <div class="window-dots"><span class="window-dot"></span><span class="window-dot"></span><span class="window-dot"></span></div>
+            <span class="code-label">Store Flags</span>
+            <button class="copy-btn">
+              <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="1" y="3" width="7" height="7" rx="1.2"/><path d="M3 3V2a1 1 0 011-1h5a1 1 0 011 1v6a1 1 0 01-1 1H8"/></svg>
+              Copy
+            </button>
+          </div>
+          <pre><code><span class="t-cmt"># Connect to a specific store inline</span>
+<span class="t-cmd">shopify theme dev <span class="t-flag">--store</span> <span class="t-str">your-store.myshopify.com</span></span>
+
+<span class="t-cmt"># Use a .env file for store config</span>
+<span class="t-cmt"># Create .env in your theme root:</span>
+<span class="t-str">SHOPIFY_FLAG_STORE=your-store.myshopify.com</span>
+<span class="t-str">SHOPIFY_CLI_THEME_TOKEN=shptka_xxxx</span>
+
+<span class="t-cmt"># CLI will auto-pick up .env variables</span></code></pre>
+        </div>
+
+        <div class="callout tip">
+          <span class="callout-icon">💡</span>
+          <div class="callout-content">
+            <div class="callout-title">Pro Tip — .env files</div>
+            <div class="callout-body">Add <code>.env</code> to your <code>.gitignore</code> to keep store credentials out of your repository. Use <code>.env.example</code> with placeholder values for teammates to reference.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================================================
+           5. THEME DEV SERVER
+           ==================================================== -->
+      <section class="doc-section reveal" id="theme-dev">
+        <div class="section-head">
+          <div class="section-icon-box">⚡</div>
+          <div class="section-meta">
+            <div class="section-eyebrow">Section 05</div>
+            <h2 class="section-title">Dev Server</h2>
+            <p class="section-desc">Start a local development server with hot reloading against a real Shopify store.</p>
+          </div>
+        </div>
+
+        <p><code>shopify theme dev</code> is your primary command during active development. It watches local files, syncs changes to a development theme on your store, and provides a live preview URL.</p>
+
+        <div class="code-block">
+          <div class="code-header">
+            <div class="window-dots"><span class="window-dot"></span><span class="window-dot"></span><span class="window-dot"></span></div>
+            <span class="code-label">shopify theme dev</span>
+            <button class="copy-btn">
+              <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="1" y="3" width="7" height="7" rx="1.2"/><path d="M3 3V2a1 1 0 011-1h5a1 1 0 011 1v6a1 1 0 01-1 1H8"/></svg>
+              Copy
+            </button>
+          </div>
+          <pre><code><span class="t-cmt"># Start dev server (creates a dev theme on store)</span>
+<span class="t-cmd">shopify theme dev</span>
+
+<span class="t-cmt"># Dev against a specific store</span>
+<span class="t-cmd">shopify theme dev <span class="t-flag">--store</span> <span class="t-str">your-store.myshopify.com</span></span>
+
+<span class="t-cmt"># Dev against an existing theme (by ID)</span>
+<span class="t-cmd">shopify theme dev <span class="t-flag">--theme</span> <span class="t-num">123456789</span></span>
+
+<span class="t-cmt"># Open browser automatically</span>
+<span class="t-cmd">shopify theme dev <span class="t-flag">--open</span></span>
+
+<span class="t-cmt"># Use a specific port for the local server</span>
+<span class="t-cmd">shopify theme dev <span class="t-flag">--port</span> <span class="t-num">9292</span></span>
+
+<span class="t-cmt"># Skip pushing local files first (faster cold start)</span>
+<span class="t-cmd">shopify theme dev <span class="t-flag">--nodelete</span></span></code></pre>
+        </div>
+
+        <h3>How it works</h3>
+        <div class="step-flow stagger">
+          <div class="step">
+            <div class="step-num">1</div>
+            <div class="step-content">
+              <div class="step-title">Upload to dev theme</div>
+              <div class="step-desc">CLI creates (or reuses) a hidden "development theme" on your store and pushes your local files to it.</div>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num">2</div>
+            <div class="step-content">
+              <div class="step-title">Watch for changes</div>
+              <div class="step-desc">CLI watches your local file system. When you save a file, it syncs the change to the dev theme within milliseconds.</div>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num">3</div>
+            <div class="step-content">
+              <div class="step-title">Live preview</div>
+              <div class="step-desc">Open the provided <code>?preview_theme_id=xxx</code> URL — the browser auto-refreshes when files change.</div>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num">4</div>
+            <div class="step-content">
+              <div class="step-title">Stop with Ctrl+C</div>
+              <div class="step-desc">The dev server stops and the development theme stays on your store for reuse next time.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="callout tip">
+          <span class="callout-icon">💡</span>
+          <div class="callout-content">
+            <div class="callout-title">Dev themes are hidden</div>
+            <div class="callout-body">Development themes created by <code>shopify theme dev</code> are hidden from the Shopify admin theme list. They don't count against your theme limit and won't be accidentally published.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================================================
+           6. PULL & PUSH
+           ==================================================== -->
+      <section class="doc-section reveal" id="theme-pull-push">
+        <div class="section-head">
+          <div class="section-icon-box">↕</div>
+          <div class="section-meta">
+            <div class="section-eyebrow">Section 06</div>
+            <h2 class="section-title">Pull &amp; Push</h2>
+            <p class="section-desc">Sync theme files between your local machine and Shopify store.</p>
+          </div>
+        </div>
+
+        <div class="two-col">
+          <div class="two-col-item">
+            <h4>
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="var(--blue)" stroke-width="1.6"><path d="M7 2v10M3 8l4 4 4-4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              theme pull — Download
+            </h4>
+            <div class="code-block">
+              <div class="code-header"><span class="code-label">shopify theme pull</span><button class="copy-btn"><svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="1" y="3" width="7" height="7" rx="1.2"/><path d="M3 3V2a1 1 0 011-1h5a1 1 0 011 1v6a1 1 0 01-1 1H8"/></svg> Copy</button></div>
+              <pre><code><span class="t-cmt"># Pull current live theme</span>
+<span class="t-cmd">shopify theme pull</span>
+
+<span class="t-cmt"># Pull specific theme by ID</span>
+<span class="t-cmd">shopify theme pull <span class="t-flag">--theme</span> <span class="t-num">123456789</span></span>
+
+<span class="t-cmt"># Pull to specific directory</span>
+<span class="t-cmd">shopify theme pull <span class="t-flag">--path</span> <span class="t-str">./my-theme</span></span>
+
+<span class="t-cmt"># Pull only specific files</span>
+<span class="t-cmd">shopify theme pull <span class="t-flag">--only</span> <span class="t-str">templates/</span></span></code></pre>
+            </div>
+          </div>
+          <div class="two-col-item">
+            <h4>
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="var(--green)" stroke-width="1.6"><path d="M7 12V2M3 6l4-4 4 4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              theme push — Upload
+            </h4>
+            <div class="code-block">
+              <div class="code-header"><span class="code-label">shopify theme push</span><button class="copy-btn"><svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="1" y="3" width="7" height="7" rx="1.2"/><path d="M3 3V2a1 1 0 011-1h5a1 1 0 011 1v6a1 1 0 01-1 1H8"/></svg> Copy</button></div>
+              <pre><code><span class="t-cmt"># Push to active theme (with confirmation)</span>
+<span class="t-cmd">shopify theme push</span>
+
+<span class="t-cmt"># Push as new unpublished theme</span>
+<span class="t-cmd">shopify theme push <span class="t-flag">--unpublished</span></span>
+
+<span class="t-cmt"># Push to specific theme by ID</span>
+<span class="t-cmd">shopify theme push <span class="t-flag">--theme</span> <span class="t-num">123456789</span></span>
+
+<span class="t-cmt"># Allow deleting remote files</span>
+<span class="t-cmd">shopify theme push <span class="t-flag">--allow-live</span></span></code></pre>
+            </div>
+          </div>
+        </div>
+
+        <div class="callout danger">
+          <span class="callout-icon">🛑</span>
+          <div class="callout-content">
+            <div class="callout-title">Danger — Push overwrites remote</div>
+            <div class="callout-body"><code>shopify theme push</code> overwrites remote files with your local versions. If someone made changes in the Shopify editor while you were working locally, <strong>those changes will be lost</strong>. Always pull before pushing in collaborative environments.</div>
+          </div>
+        </div>
+
+        <h3>Safe push workflow</h3>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="window-dots"><span class="window-dot"></span><span class="window-dot"></span><span class="window-dot"></span></div>
+            <span class="code-label">Recommended workflow before push</span>
+            <button class="copy-btn">
+              <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="1" y="3" width="7" height="7" rx="1.2"/><path d="M3 3V2a1 1 0 011-1h5a1 1 0 011 1v6a1 1 0 01-1 1H8"/></svg>
+              Copy
+            </button>
+          </div>
+          <pre><code><span class="t-cmt"># 1. Stash current local changes</span>
+<span class="t-cmd">git stash</span>
+
+<span class="t-cmt"># 2. Pull latest from store</span>
+<span class="t-cmd">shopify theme pull</span>
+
+<span class="t-cmt"># 3. Commit pulled changes to Git</span>
+<span class="t-cmd">git add -A && git commit -m <span class="t-str">"sync: pull latest from store"</span></span>
+
+<span class="t-cmt"># 4. Pop your stashed work</span>
+<span class="t-cmd">git stash pop</span>
+
+<span class="t-cmt"># 5. Resolve any conflicts, then push</span>
+<span class="t-cmd">shopify theme push</span></code></pre>
+        </div>
+      </section>
+
+      <!-- ====================================================
+           7. MANAGE THEMES
+           ==================================================== -->
+      <section class="doc-section reveal" id="theme-manage">
+        <div class="section-head">
+          <div class="section-icon-box">◧</div>
+          <div class="section-meta">
+            <div class="section-eyebrow">Section 07</div>
+            <h2 class="section-title">Manage Themes</h2>
+            <p class="section-desc">List, publish, rename, duplicate, and delete themes from the command line.</p>
+          </div>
+        </div>
+
+        <div class="cmd-table-wrap">
+          <table class="cmd-table">
+            <thead>
+              <tr><th>Command</th><th>Description</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>shopify theme list</td><td>List all themes with IDs and statuses</td></tr>
+              <tr><td>shopify theme publish</td><td>Make a theme the live/active theme</td></tr>
+              <tr><td>shopify theme open</td><td>Open theme preview URL in browser</td></tr>
+              <tr><td>shopify theme editor</td><td>Open theme customizer in browser</td></tr>
+              <tr><td>shopify theme share</td><td>Create shareable preview link (duplicates as unpublished)</td></tr>
+              <tr><td>shopify theme rename</td><td>Rename a theme</td></tr>
+              <tr><td>shopify theme delete</td><td>Delete a theme permanently</td></tr>
+              <tr><td>shopify theme package</td><td>Create a .zip for Theme Store submission</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="code-block">
+          <div class="code-header">
+            <div class="window-dots"><span class="window-dot"></span><span class="window-dot"></span><span class="window-dot"></span></div>
+            <span class="code-label">Theme management examples</span>
+            <button class="copy-btn">
+              <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="1" y="3" width="7" height="7" rx="1.2"/><path d="M3 3V2a1 1 0 011-1h5a1 1 0 011 1v6a1 1 0 01-1 1H8"/></svg>
+              Copy
+            </button>
+          </div>
+          <pre><code><span class="t-cmt"># List all themes with their IDs</span>
+<span class="t-cmd">shopify theme list</span>
+<span class="t-cmt"># Output: ID: 123456 | Name: Dawn | Role: main</span>
+
+<span class="t-cmt"># Publish a theme (make it live)</span>
+<span class="t-cmd">shopify theme publish <span class="t-flag">--theme</span> <span class="t-num">123456789</span></span>
+
+<span class="t-cmt"># Open the live theme preview</span>
+<span class="t-cmd">shopify theme open <span class="t-flag">--theme</span> <span class="t-num">123456789</span></span>
+
+<span class="t-cmt"># Create a shareable preview link</span>
+<span class="t-cmd">shopify theme share</span>
+
+<span class="t-cmt"># Rename a theme</span>
+<span class="t-cmd">shopify theme rename <span class="t-flag">--theme</span> <span class="t-num">123456789</span> <span class="t-flag">--name</span> <span class="t-str">"Production v2"</span></span>
+
+<span class="t-cmt"># Delete a theme (cannot be undone!)</span>
+<span class="t-cmd">shopify theme delete <span class="t-flag">--theme</span> <span class="t-num">123456789</span></span>
+
+<span class="t-cmt"># Package theme as zip</span>
+<span class="t-cmd">shopify theme package</span></code></pre>
+        </div>
+      </section>
+
+      <!-- ====================================================
+           8. THEME CHECK
+           ==================================================== -->
+      <section class="doc-section reveal" id="theme-check">
+        <div class="section-head">
+          <div class="section-icon-box">✓</div>
+          <div class="section-meta">
+            <div class="section-eyebrow">Section 08</div>
+            <h2 class="section-title">Theme Check</h2>
+            <p class="section-desc">Lint and validate your Liquid, JSON, and assets to catch errors before they ship.</p>
+          </div>
+        </div>
+
+        <div class="code-block">
+          <div class="code-header">
+            <div class="window-dots"><span class="window-dot"></span><span class="window-dot"></span><span class="window-dot"></span></div>
+            <span class="code-label">shopify theme check</span>
+            <button class="copy-btn">
+              <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="1" y="3" width="7" height="7" rx="1.2"/><path d="M3 3V2a1 1 0 011-1h5a1 1 0 011 1v6a1 1 0 01-1 1H8"/></svg>
+              Copy
+            </button>
+          </div>
+          <pre><code><span class="t-cmt"># Run full theme check</span>
+<span class="t-cmd">shopify theme check</span>
+
+<span class="t-cmt"># Auto-fix correctable issues</span>
+<span class="t-cmd">shopify theme check <span class="t-flag">--auto-correct</span></span>
+
+<span class="t-cmt"># Check specific path only</span>
+<span class="t-cmd">shopify theme check <span class="t-flag">--path</span> <span class="t-str">./sections</span></span>
+
+<span class="t-cmt"># Output as JSON (for CI pipelines)</span>
+<span class="t-cmd">shopify theme check <span class="t-flag">--output</span> <span class="t-str">json</span></span>
+
+<span class="t-cmt"># Fail with exit code on errors (for CI)</span>
+<span class="t-cmd">shopify theme check <span class="t-flag">--fail-level</span> <span class="t-str">error</span></span></code></pre>
+        </div>
+
+        <h3>Theme Check config (.theme-check.yml)</h3>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="window-dots"><span class="window-dot"></span><span class="window-dot"></span><span class="window-dot"></span></div>
+            <span class="code-label">.theme-check.yml</span>
+            <button class="copy-btn">
+              <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="1" y="3" width="7" height="7" rx="1.2"/><path d="M3 3V2a1 1 0 011-1h5a1 1 0 011 1v6a1 1 0 01-1 1H8"/></svg>
+              Copy
+            </button>
+          </div>
+          <pre><code><span class="t-str">root</span><span class="t-op">:</span> <span class="t-str">./</span>
+
+<span class="t-cmt"># Disable specific checks</span>
+<span class="t-str">UnusedAssign</span><span class="t-op">:</span>
+  <span class="t-str">enabled</span><span class="t-op">:</span> <span class="t-kw">false</span>
+
+<span class="t-str">MissingTemplate</span><span class="t-op">:</span>
+  <span class="t-str">enabled</span><span class="t-op">:</span> <span class="t-kw">true</span>
+
+<span class="t-str">RemoteAsset</span><span class="t-op">:</span>
+  <span class="t-str">enabled</span><span class="t-op">:</span> <span class="t-kw">false</span></code></pre>
+        </div>
+
+        <div class="callout tip">
+          <span class="callout-icon">💡</span>
+          <div class="callout-content">
+            <div class="callout-title">Use in CI</div>
+            <div class="callout-body">Add <code>shopify theme check --fail-level error</code> to your GitHub Actions workflow to block merges when Liquid errors are present.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================================================
+           9. SHOPIFYIGNORE
+           ==================================================== -->
+      <section class="doc-section reveal" id="shopifyignore">
+        <div class="section-head">
+          <div class="section-icon-box">⊘</div>
+          <div class="section-meta">
+            <div class="section-eyebrow">Section 09</div>
+            <h2 class="section-title">.shopifyignore</h2>
+            <p class="section-desc">Control which local files are excluded from push/pull operations.</p>
+          </div>
+        </div>
+
+        <p>Similar to <code>.gitignore</code>, a <code>.shopifyignore</code> file in your theme root tells Shopify CLI which files to exclude during sync operations. Useful for local development tooling files that shouldn't go to the store.</p>
+
+        <div class="code-block">
+          <div class="code-header">
+            <div class="window-dots"><span class="window-dot"></span><span class="window-dot"></span><span class="window-dot"></span></div>
+            <span class="code-label">.shopifyignore</span>
+            <button class="copy-btn">
+              <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="1" y="3" width="7" height="7" rx="1.2"/><path d="M3 3V2a1 1 0 011-1h5a1 1 0 011 1v6a1 1 0 01-1 1H8"/></svg>
+              Copy
+            </button>
+          </div>
+          <pre><code><span class="t-cmt"># Local tooling — don't push to Shopify</span>
+<span class="t-str">*.test.liquid</span>
+<span class="t-str">node_modules/</span>
+<span class="t-str">.env</span>
+<span class="t-str">.env.*</span>
+<span class="t-str">.DS_Store</span>
+<span class="t-str">.vscode/</span>
+<span class="t-str">README.md</span>
+<span class="t-str">package.json</span>
+<span class="t-str">package-lock.json</span>
+<span class="t-str">*.config.js</span>
+
+<span class="t-cmt"># Staging-only sections (example)</span>
+<span class="t-str">sections/dev-banner.liquid</span></code></pre>
+        </div>
+      </section>
+
+      <!-- ====================================================
+           10. GENERAL COMMANDS
+           ==================================================== -->
+      <section class="doc-section reveal" id="general-cmds">
+        <div class="section-head">
+          <div class="section-icon-box">⌘</div>
+          <div class="section-meta">
+            <div class="section-eyebrow">Section 10</div>
+            <h2 class="section-title">General Commands</h2>
+            <p class="section-desc">Top-level CLI commands for version management, help, and environment info.</p>
+          </div>
+        </div>
+
+        <div class="cmd-table-wrap">
+          <table class="cmd-table">
+            <thead>
+              <tr><th>Command</th><th>Description</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>shopify version</td><td>Show installed CLI version</td></tr>
+              <tr><td>shopify help</td><td>List all available commands</td></tr>
+              <tr><td>shopify help [command]</td><td>Show help for a specific command</td></tr>
+              <tr><td>shopify upgrade</td><td>Self-update CLI to latest version</td></tr>
+              <tr><td>shopify config</td><td>Show current CLI configuration</td></tr>
+              <tr><td>shopify whoami</td><td>Show currently authenticated user</td></tr>
+              <tr><td>shopify logout</td><td>Log out from current account</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="code-block">
+          <div class="code-header">
+            <div class="window-dots"><span class="window-dot"></span><span class="window-dot"></span><span class="window-dot"></span></div>
+            <span class="code-label">General command examples</span>
+            <button class="copy-btn">
+              <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="1" y="3" width="7" height="7" rx="1.2"/><path d="M3 3V2a1 1 0 011-1h5a1 1 0 011 1v6a1 1 0 01-1 1H8"/></svg>
+              Copy
+            </button>
+          </div>
+          <pre><code><span class="t-cmt"># Check version</span>
+<span class="t-cmd">shopify version</span>
+
+<span class="t-cmt"># Get help for theme commands</span>
+<span class="t-cmd">shopify help theme</span>
+
+<span class="t-cmt"># See flags for a specific command</span>
+<span class="t-cmd">shopify theme dev <span class="t-flag">--help</span></span>
+
+<span class="t-cmt"># See authenticated account</span>
+<span class="t-cmd">shopify whoami</span></code></pre>
+        </div>
+      </section>
+
+      <!-- ====================================================
+           11. FLAGS & OPTIONS
+           ==================================================== -->
+      <section class="doc-section reveal" id="flags">
+        <div class="section-head">
+          <div class="section-icon-box">⚑</div>
+          <div class="section-meta">
+            <div class="section-eyebrow">Section 11</div>
+            <h2 class="section-title">Flags &amp; Options</h2>
+            <p class="section-desc">Common flags shared across Shopify CLI theme commands.</p>
+          </div>
+        </div>
+
+        <div class="cmd-table-wrap">
+          <table class="cmd-table">
+            <thead>
+              <tr><th>Flag</th><th>Alias</th><th>Description</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><span class="flag-tag">--store</span></td><td><span class="flag-tag">-s</span></td><td>Target store (e.g. my-store.myshopify.com)</td></tr>
+              <tr><td><span class="flag-tag">--theme</span></td><td><span class="flag-tag">-t</span></td><td>Theme ID or name to target</td></tr>
+              <tr><td><span class="flag-tag">--path</span></td><td><span class="flag-tag">-p</span></td><td>Local path to theme directory</td></tr>
+              <tr><td><span class="flag-tag">--only</span></td><td></td><td>Glob pattern — only sync matching files</td></tr>
+              <tr><td><span class="flag-tag">--ignore</span></td><td></td><td>Glob pattern — skip matching files</td></tr>
+              <tr><td><span class="flag-tag">--live</span></td><td></td><td>Target the live/published theme</td></tr>
+              <tr><td><span class="flag-tag">--unpublished</span></td><td></td><td>Push as new unpublished theme</td></tr>
+              <tr><td><span class="flag-tag">--open</span></td><td></td><td>Open browser after command</td></tr>
+              <tr><td><span class="flag-tag">--nodelete</span></td><td></td><td>Don't delete remote files not present locally</td></tr>
+              <tr><td><span class="flag-tag">--allow-live</span></td><td></td><td>Allow pushing to the live theme</td></tr>
+              <tr><td><span class="flag-tag">--json</span></td><td></td><td>Output result as JSON</td></tr>
+              <tr><td><span class="flag-tag">--verbose</span></td><td></td><td>Show detailed debug output</td></tr>
+              <tr><td><span class="flag-tag">--no-color</span></td><td></td><td>Disable color output (for CI)</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ====================================================
+           12. LOCAL DEVELOPMENT
+           ==================================================== -->
+      <section class="doc-section reveal" id="local-dev">
+        <div class="section-head">
+          <div class="section-icon-box">💻</div>
+          <div class="section-meta">
+            <div class="section-eyebrow">Section 12</div>
+            <h2 class="section-title">Local Development</h2>
+            <p class="section-desc">Setting up a solid local development environment and daily workflow.</p>
+          </div>
+        </div>
+
+        <h3>Recommended project structure</h3>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="window-dots"><span class="window-dot"></span><span class="window-dot"></span><span class="window-dot"></span></div>
+            <span class="code-label">Theme directory structure</span>
+            <button class="copy-btn">
+              <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="1" y="3" width="7" height="7" rx="1.2"/><path d="M3 3V2a1 1 0 011-1h5a1 1 0 011 1v6a1 1 0 01-1 1H8"/></svg>
+              Copy
+            </button>
+          </div>
+          <pre><code><span class="t-str">my-shopify-theme/</span>
+<span class="t-cmt">├── assets/          # CSS, JS, images, fonts</span>
+<span class="t-cmt">├── config/          # settings_schema.json, settings_data.json</span>
+<span class="t-cmt">├── layout/          # theme.liquid, password.liquid</span>
+<span class="t-cmt">├── locales/         # Translation JSON files</span>
+<span class="t-cmt">├── sections/        # Section .liquid files</span>
+<span class="t-cmt">├── snippets/        # Reusable Liquid snippets</span>
+<span class="t-cmt">├── templates/       # Page template files (.json or .liquid)</span>
+<span class="t-cmt">├── .shopifyignore   # Files to exclude from sync</span>
+<span class="t-cmt">├── .gitignore       # Files to exclude from Git</span>
+<span class="t-cmt">├── .env             # Local store config (never commit)</span>
+<span class="t-cmt">└── README.md        # Project docs</span></code></pre>
+        </div>
+
+        <h3>Daily development workflow</h3>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="window-dots"><span class="window-dot"></span><span class="window-dot"></span><span class="window-dot"></span></div>
+            <span class="code-label">Typical dev session</span>
+            <button class="copy-btn">
+              <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="1" y="3" width="7" height="7" rx="1.2"/><path d="M3 3V2a1 1 0 011-1h5a1 1 0 011 1v6a1 1 0 01-1 1H8"/></svg>
+              Copy
+            </button>
+          </div>
+          <pre><code><span class="t-cmt"># Morning — sync latest changes from store</span>
+<span class="t-cmd">git checkout main</span>
+<span class="t-cmd">git pull origin main</span>
+<span class="t-cmd">shopify theme pull</span>
+
+<span class="t-cmt"># Create feature branch</span>
+<span class="t-cmd">git checkout -b <span class="t-str">feature/new-hero-section</span></span>
+
+<span class="t-cmt"># Start dev server</span>
+<span class="t-cmd">shopify theme dev</span>
+
+<span class="t-cmt"># Make changes, preview in browser…</span>
+<span class="t-cmt"># When done, commit and push to Git</span>
+<span class="t-cmd">git add -A</span>
+<span class="t-cmd">git commit -m <span class="t-str">"feat: add animated hero section"</span></span>
+<span class="t-cmd">git push origin <span class="t-str">feature/new-hero-section</span></span>
+
+<span class="t-cmt"># After review, merge to main and deploy</span>
+<span class="t-cmd">git checkout main</span>
+<span class="t-cmd">git merge <span class="t-str">feature/new-hero-section</span></span>
+<span class="t-cmd">shopify theme push <span class="t-flag">--unpublished</span></span></code></pre>
+        </div>
+      </section>
+
+      <!-- ====================================================
+           13. GIT WORKFLOW
+           ==================================================== -->
+      <section class="doc-section reveal" id="git-workflow">
+        <div class="section-head">
+          <div class="section-icon-box">⑂</div>
+          <div class="section-meta">
+            <div class="section-eyebrow">Section 13</div>
+            <h2 class="section-title">Git Workflow</h2>
+            <p class="section-desc">Branching strategy, Git + Shopify CLI integration, and team collaboration patterns.</p>
+          </div>
+        </div>
+
+        <h3>Recommended branching strategy</h3>
+        <div class="two-col">
+          <div class="two-col-item">
+            <h4>🌿 Branch naming</h4>
+            <ul style="font-size:13.5px;color:var(--text-secondary);line-height:2">
+              <li><code>main</code> — production-ready code</li>
+              <li><code>staging</code> — pre-release testing</li>
+              <li><code>feature/*</code> — new features</li>
+              <li><code>fix/*</code> — bug fixes</li>
+              <li><code>hotfix/*</code> — urgent production fixes</li>
+              <li><code>chore/*</code> — refactors, tooling</li>
+            </ul>
+          </div>
+          <div class="two-col-item">
+            <h4>📐 Git rules for themes</h4>
+            <ul style="font-size:13.5px;color:var(--text-secondary);line-height:2">
+              <li>Never commit <code>config/settings_data.json</code></li>
+              <li>Always pull before starting work</li>
+              <li>Use atomic, descriptive commits</li>
+              <li>Require PR reviews before merging main</li>
+              <li>Tag releases: <code>v1.0.0</code></li>
+              <li>Keep <code>.env</code> out of Git</li>
+            </ul>
+          </div>
+        </div>
+
+        <h3>Recommended .gitignore for Shopify themes</h3>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="window-dots"><span class="window-dot"></span><span class="window-dot"></span><span class="window-dot"></span></div>
+            <span class="code-label">.gitignore</span>
+            <button class="copy-btn">
+              <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="1" y="3" width="7" height="7" rx="1.2"/><path d="M3 3V2a1 1 0 011-1h5a1 1 0 011 1v6a1 1 0 01-1 1H8"/></svg>
+              Copy
+            </button>
+          </div>
+          <pre><code><span class="t-cmt"># Environment & secrets</span>
+<span class="t-str">.env</span>
+<span class="t-str">.env.*</span>
+<span class="t-str">!.env.example</span>
+
+<span class="t-cmt"># Shopify theme editor customizations (optional)</span>
+<span class="t-str">config/settings_data.json</span>
+
+<span class="t-cmt"># OS noise</span>
+<span class="t-str">.DS_Store</span>
+<span class="t-str">Thumbs.db</span>
+<span class="t-str">desktop.ini</span>
+
+<span class="t-cmt"># Editor</span>
+<span class="t-str">.vscode/settings.json</span>
+<span class="t-str">*.swp</span>
+<span class="t-str">*.swo</span>
+
+<span class="t-cmt"># Node</span>
+<span class="t-str">node_modules/</span>
+<span class="t-str">npm-debug.log*</span></code></pre>
+        </div>
+
+        <div class="callout warn">
+          <span class="callout-icon">⚠️</span>
+          <div class="callout-content">
+            <div class="callout-title">settings_data.json</div>
+            <div class="callout-body">Committing <code>config/settings_data.json</code> is controversial. It contains theme editor customizations (colors, text, section settings). Many teams exclude it to avoid content conflicts. Decide on a team policy and document it.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================================================
+           14. CONFLICT RESOLUTION
+           ==================================================== -->
+      <section class="doc-section reveal" id="conflicts">
+        <div class="section-head">
+          <div class="section-icon-box">⚠</div>
+          <div class="section-meta">
+            <div class="section-eyebrow">Section 14</div>
+            <h2 class="section-title">Conflict Resolution</h2>
+            <p class="section-desc">Handling merge conflicts, theme pull/push conflicts, and accidental overwrites.</p>
+          </div>
+        </div>
+
+        <h3>Types of conflicts in Shopify theme work</h3>
+        <div class="card-grid stagger">
+          <div class="card">
+            <div class="card-icon">⑂</div>
+            <div class="card-title">Git merge conflicts</div>
+            <div class="card-desc">Two branches modified the same Liquid file. Standard Git resolution applies.</div>
+          </div>
+          <div class="card">
+            <div class="card-icon">↕</div>
+            <div class="card-title">Local vs remote conflicts</div>
+            <div class="card-desc">You edited locally while someone changed the same file in the Shopify editor.</div>
+          </div>
+          <div class="card">
+            <div class="card-icon">🔄</div>
+            <div class="card-title">settings_data conflicts</div>
+            <div class="card-desc">Theme customizer changes vs Git-tracked settings create JSON conflicts.</div>
+          </div>
+          <div class="card">
+            <div class="card-icon">🗑</div>
+            <div class="card-title">Accidental overwrite</div>
+            <div class="card-desc">A push wiped out changes made in the Shopify admin. Recovery needed.</div>
+          </div>
+        </div>
+
+        <h3>Git merge conflict — what it looks like</h3>
+        <div class="conflict-block">
+          <div class="conflict-header">
+            <span>📄</span> sections/hero.liquid — merge conflict
+          </div>
+          <div class="conflict-zone conflict-ours">
+            <div class="conflict-marker-ours">&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD (your branch)</div>
+            <div style="color:var(--code-text)">  &lt;h1 class="hero__title hero__title--large"&gt;{{ section.settings.title }}&lt;/h1&gt;</div>
+          </div>
+          <div class="conflict-sep">=======</div>
+          <div class="conflict-zone conflict-theirs">
+            <div style="color:var(--code-text)">  &lt;h1 class="hero__heading"&gt;{{ section.settings.heading }}&lt;/h1&gt;</div>
+            <div class="conflict-marker-theirs">&gt;&gt;&gt;&gt;&gt;&gt;&gt; main (their changes)</div>
+          </div>
+          <div class="conflict-end">&gt;&gt;&gt;&gt;&gt;&gt;&gt; end conflict</div>
+        </div>
+
+        <h3>Resolving Git conflicts step-by-step</h3>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="window-dots"><span class="window-dot"></span><span class="window-dot"></span><span class="window-dot"></span></div>
+            <span class="code-label">Git conflict resolution workflow</span>
+            <button class="copy-btn">
+              <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="1" y="3" width="7" height="7" rx="1.2"/><path d="M3 3V2a1 1 0 011-1h5a1 1 0 011 1v6a1 1 0 01-1 1H8"/></svg>
+              Copy
+            </button>
+          </div>
+          <pre><code><span class="t-cmt"># 1. See what's conflicted</span>
+<span class="t-cmd">git status</span>
+<span class="t-cmt"># Unmerged paths: sections/hero.liquid</span>
+
+<span class="t-cmt"># 2. Open conflicted file in editor, resolve markers:</span>
+<span class="t-cmt">#    &lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD  → your changes
+#    =======        → divider
+#    &gt;&gt;&gt;&gt;&gt;&gt;&gt; main   → incoming changes
+#    Delete markers, keep the correct code</span>
+
+<span class="t-cmt"># 3. Stage resolved file</span>
+<span class="t-cmd">git add sections/hero.liquid</span>
+
+<span class="t-cmt"># 4. Continue merge or commit</span>
+<span class="t-cmd">git merge --continue</span>
+<span class="t-cmt"># or</span>
+<span class="t-cmd">git commit -m <span class="t-str">"merge: resolve hero section conflict"</span></span>
+
+<span class="t-cmt"># 5. Push resolved code to store</span>
+<span class="t-cmd">shopify theme push</span></code></pre>
+        </div>
+
+        <h3>Recovering from accidental theme push overwrite</h3>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="window-dots"><span class="window-dot"></span><span class="window-dot"></span><span class="window-dot"></span></div>
+            <span class="code-label">Recovery workflow</span>
+            <button class="copy-btn">
+              <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="1" y="3" width="7" height="7" rx="1.2"/><path d="M3 3V2a1 1 0 011-1h5a1 1 0 011 1v6a1 1 0 01-1 1H8"/></svg>
+              Copy
+            </button>
+          </div>
+          <pre><code><span class="t-cmt"># Option A — Restore from Git history</span>
+<span class="t-cmd">git log --oneline <span class="t-flag">-10</span></span>
+<span class="t-cmt"># Find the last good commit hash, e.g. abc1234</span>
+<span class="t-cmd">git checkout abc1234 <span class="t-flag">--</span> sections/hero.liquid</span>
+<span class="t-cmd">git commit -m <span class="t-str">"revert: restore hero.liquid from abc1234"</span></span>
+<span class="t-cmd">shopify theme push <span class="t-flag">--only</span> <span class="t-str">sections/hero.liquid</span></span>
+
+<span class="t-cmt"># Option B — Full rollback to previous Git commit</span>
+<span class="t-cmd">git revert HEAD</span>
+<span class="t-cmd">shopify theme push</span>
+
+<span class="t-cmt"># Option C — Use Shopify admin theme history</span>
+<span class="t-cmt"># Admin → Online Store → Themes → ⋯ → Revert to previous version</span></code></pre>
+        </div>
+
+        <h3>Git stash for safe context switching</h3>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="window-dots"><span class="window-dot"></span><span class="window-dot"></span><span class="window-dot"></span></div>
+            <span class="code-label">git stash workflow</span>
+            <button class="copy-btn">
+              <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="1" y="3" width="7" height="7" rx="1.2"/><path d="M3 3V2a1 1 0 011-1h5a1 1 0 011 1v6a1 1 0 01-1 1H8"/></svg>
+              Copy
+            </button>
+          </div>
+          <pre><code><span class="t-cmt"># Urgent hotfix needed mid-feature? Stash work:</span>
+<span class="t-cmd">git stash push -m <span class="t-str">"WIP: hero animation feature"</span></span>
+
+<span class="t-cmt"># Do the hotfix</span>
+<span class="t-cmd">git checkout <span class="t-str">hotfix/fix-nav-mobile</span></span>
+<span class="t-cmt"># … fix things …</span>
+<span class="t-cmd">shopify theme push</span>
+<span class="t-cmd">git checkout <span class="t-str">feature/hero-animation</span></span>
+
+<span class="t-cmt"># Restore stashed work</span>
+<span class="t-cmd">git stash pop</span>
+
+<span class="t-cmt"># View all stashes</span>
+<span class="t-cmd">git stash list</span>
+
+<span class="t-cmt"># Apply specific stash</span>
+<span class="t-cmd">git stash apply <span class="t-str">stash@{2}</span></span></code></pre>
+        </div>
+      </section>
+
+      <!-- ====================================================
+           15. DEPLOYMENT
+           ==================================================== -->
+      <section class="doc-section reveal" id="deployment">
+        <div class="section-head">
+          <div class="section-icon-box">🚀</div>
+          <div class="section-meta">
+            <div class="section-eyebrow">Section 15</div>
+            <h2 class="section-title">Deployment</h2>
+            <p class="section-desc">Safe deployment patterns, staging environments, and GitHub Actions CI/CD.</p>
+          </div>
+        </div>
+
+        <h3>Manual deployment workflow</h3>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="window-dots"><span class="window-dot"></span><span class="window-dot"></span><span class="window-dot"></span></div>
+            <span class="code-label">Recommended deploy process</span>
+            <button class="copy-btn">
+              <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="1" y="3" width="7" height="7" rx="1.2"/><path d="M3 3V2a1 1 0 011-1h5a1 1 0 011 1v6a1 1 0 01-1 1H8"/></svg>
+              Copy
+            </button>
+          </div>
+          <pre><code><span class="t-cmt"># 1. Lint before deployment</span>
+<span class="t-cmd">shopify theme check <span class="t-flag">--fail-level</span> <span class="t-str">error</span></span>
+
+<span class="t-cmt"># 2. Push as new UNPUBLISHED theme (safe preview)</span>
+<span class="t-cmd">shopify theme push <span class="t-flag">--unpublished</span> <span class="t-flag">--store</span> <span class="t-str">your-store.myshopify.com</span></span>
+<span class="t-cmt"># CLI outputs the new theme ID</span>
+
+<span class="t-cmt"># 3. Preview the unpublished theme, get approval</span>
+<span class="t-cmd">shopify theme open <span class="t-flag">--theme</span> <span class="t-num">NEW_THEME_ID</span></span>
+
+<span class="t-cmt"># 4. Publish when ready (go live)</span>
+<span class="t-cmd">shopify theme publish <span class="t-flag">--theme</span> <span class="t-num">NEW_THEME_ID</span></span>
+
+<span class="t-cmt"># 5. Tag the release in Git</span>
+<span class="t-cmd">git tag -a <span class="t-str">v1.4.2</span> -m <span class="t-str">"Release: new hero + nav refactor"</span></span>
+<span class="t-cmd">git push origin <span class="t-flag">--tags</span></span></code></pre>
+        </div>
+
+        <h3>GitHub Actions CI/CD</h3>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="window-dots"><span class="window-dot"></span><span class="window-dot"></span><span class="window-dot"></span></div>
+            <span class="code-label">.github/workflows/deploy.yml</span>
+            <button class="copy-btn">
+              <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="1" y="3" width="7" height="7" rx="1.2"/><path d="M3 3V2a1 1 0 011-1h5a1 1 0 011 1v6a1 1 0 01-1 1H8"/></svg>
+              Copy
+            </button>
+          </div>
+          <pre><code><span class="t-str">name</span><span class="t-op">:</span> Deploy Theme
+
+<span class="t-str">on</span><span class="t-op">:</span>
+  <span class="t-str">push</span><span class="t-op">:</span>
+    <span class="t-str">branches</span><span class="t-op">:</span> [<span class="t-str">main</span>]
+
+<span class="t-str">jobs</span><span class="t-op">:</span>
+  <span class="t-str">deploy</span><span class="t-op">:</span>
+    <span class="t-str">runs-on</span><span class="t-op">:</span> <span class="t-str">ubuntu-latest</span>
+    <span class="t-str">steps</span><span class="t-op">:</span>
+      <span class="t-op">-</span> <span class="t-str">uses</span><span class="t-op">:</span> <span class="t-str">actions/checkout@v4</span>
+
+      <span class="t-op">-</span> <span class="t-str">uses</span><span class="t-op">:</span> <span class="t-str">actions/setup-node@v4</span>
+        <span class="t-str">with</span><span class="t-op">:</span>
+          <span class="t-str">node-version</span><span class="t-op">:</span> <span class="t-str">'20'</span>
+
+      <span class="t-op">-</span> <span class="t-str">name</span><span class="t-op">:</span> <span class="t-str">Install Shopify CLI</span>
+        <span class="t-str">run</span><span class="t-op">:</span> <span class="t-str">npm install -g @shopify/cli @shopify/theme</span>
+
+      <span class="t-op">-</span> <span class="t-str">name</span><span class="t-op">:</span> <span class="t-str">Lint theme</span>
+        <span class="t-str">run</span><span class="t-op">:</span> <span class="t-str">shopify theme check --fail-level error</span>
+
+      <span class="t-op">-</span> <span class="t-str">name</span><span class="t-op">:</span> <span class="t-str">Deploy to store</span>
+        <span class="t-str">run</span><span class="t-op">:</span> <span class="t-str">shopify theme push --unpublished --allow-live</span>
+        <span class="t-str">env</span><span class="t-op">:</span>
+          <span class="t-str">SHOPIFY_CLI_THEME_TOKEN</span><span class="t-op">:</span> <span class="t-str">${{ secrets.SHOPIFY_CLI_THEME_TOKEN }}</span>
+          <span class="t-str">SHOPIFY_FLAG_STORE</span><span class="t-op">:</span> <span class="t-str">${{ secrets.SHOPIFY_STORE }}</span></code></pre>
+        </div>
+
+        <div class="callout tip">
+          <span class="callout-icon">💡</span>
+          <div class="callout-content">
+            <div class="callout-title">Store the token securely</div>
+            <div class="callout-body">Add <code>SHOPIFY_CLI_THEME_TOKEN</code> and <code>SHOPIFY_STORE</code> as GitHub Actions secrets in your repository settings. Generate the token from Shopify Partners → Apps → API keys.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================================================
+           16. COLLABORATION
+           ==================================================== -->
+      <section class="doc-section reveal" id="collaboration">
+        <div class="section-head">
+          <div class="section-icon-box">👥</div>
+          <div class="section-meta">
+            <div class="section-eyebrow">Section 16</div>
+            <h2 class="section-title">Collaboration</h2>
+            <p class="section-desc">Team workflows, roles, and best practices for multi-developer Shopify projects.</p>
+          </div>
+        </div>
+
+        <h3>Team workflow overview</h3>
+        <p>In a team environment, the key challenge is keeping local development, Git history, and the live Shopify theme in sync without stepping on each other's work.</p>
+
+        <div class="callout info">
+          <span class="callout-icon">📐</span>
+          <div class="callout-content">
+            <div class="callout-title">Golden rule</div>
+            <div class="callout-body">One person owns the live theme push. Others use <code>--unpublished</code> for review. No direct pushes to the live theme without review — enforce this with protected branches.</div>
+          </div>
+        </div>
+
+        <h3>Theme environments pattern</h3>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="window-dots"><span class="window-dot"></span><span class="window-dot"></span><span class="window-dot"></span></div>
+            <span class="code-label">Multi-environment workflow</span>
+            <button class="copy-btn">
+              <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="1" y="3" width="7" height="7" rx="1.2"/><path d="M3 3V2a1 1 0 011-1h5a1 1 0 011 1v6a1 1 0 01-1 1H8"/></svg>
+              Copy
+            </button>
+          </div>
+          <pre><code><span class="t-cmt"># Developer A — works on feature branch</span>
+<span class="t-cmd">git checkout -b <span class="t-str">feature/product-gallery</span></span>
+<span class="t-cmd">shopify theme dev</span>
+<span class="t-cmt"># Previews in their own dev theme (hidden)</span>
+
+<span class="t-cmt"># Developer A — creates a review theme for client</span>
+<span class="t-cmd">shopify theme push <span class="t-flag">--unpublished</span> <span class="t-flag">--name</span> <span class="t-str">"Review: Product Gallery"</span></span>
+<span class="t-cmd">shopify theme share</span>
+<span class="t-cmt"># Share the preview link in PR/Slack</span>
+
+<span class="t-cmt"># Lead Developer — merges PR and deploys</span>
+<span class="t-cmd">git checkout main</span>
+<span class="t-cmd">git merge <span class="t-str">feature/product-gallery</span></span>
+<span class="t-cmd">shopify theme push <span class="t-flag">--unpublished</span></span>
+<span class="t-cmt"># After sign-off:</span>
+<span class="t-cmd">shopify theme publish <span class="t-flag">--theme</span> <span class="t-num">THEME_ID</span></span></code></pre>
+        </div>
+      </section>
+
+      <!-- ====================================================
+           17. DEBUGGING
+           ==================================================== -->
+      <section class="doc-section reveal" id="debugging">
+        <div class="section-head">
+          <div class="section-icon-box">🐛</div>
+          <div class="section-meta">
+            <div class="section-eyebrow">Section 17</div>
+            <h2 class="section-title">Debugging &amp; Troubleshooting</h2>
+            <p class="section-desc">Common errors, CLI issues, and how to fix them.</p>
+          </div>
+        </div>
+
+        <div class="accordion-list">
+          <div class="accordion-item">
+            <button class="accordion-trigger">
+              <span>🔴</span>
+              <span>shopify: command not found</span>
+              <span class="accordion-chevron">▾</span>
+            </button>
+            <div class="accordion-body">
+              <p>The CLI isn't on your PATH. Try:</p>
+              <div class="code-block" style="margin:8px 0">
+                <div class="code-header"><span class="code-label">Fix</span><button class="copy-btn"><svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="1" y="3" width="7" height="7" rx="1.2"/><path d="M3 3V2a1 1 0 011-1h5a1 1 0 011 1v6a1 1 0 01-1 1H8"/></svg> Copy</button></div>
+                <pre><code><span class="t-cmd">npm list -g @shopify/cli</span>
+<span class="t-cmt"># If not installed:</span>
+<span class="t-cmd">npm install -g @shopify/cli @shopify/theme</span>
+<span class="t-cmt"># Verify:</span>
+<span class="t-cmd">which shopify</span></code></pre>
+              </div>
+            </div>
+          </div>
+
+          <div class="accordion-item">
+            <button class="accordion-trigger">
+              <span>🔴</span>
+              <span>EACCES / permission error on npm install</span>
+              <span class="accordion-chevron">▾</span>
+            </button>
+            <div class="accordion-body">
+              <p>Never use <code>sudo npm install -g</code>. Instead, fix npm permissions:</p>
+              <div class="code-block" style="margin:8px 0">
+                <div class="code-header"><span class="code-label">Fix</span><button class="copy-btn"><svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="1" y="3" width="7" height="7" rx="1.2"/><path d="M3 3V2a1 1 0 011-1h5a1 1 0 011 1v6a1 1 0 01-1 1H8"/></svg> Copy</button></div>
+                <pre><code><span class="t-cmt"># Use nvm to manage Node versions</span>
+<span class="t-cmd">nvm use --lts</span>
+<span class="t-cmd">npm install -g @shopify/cli @shopify/theme</span></code></pre>
+              </div>
+            </div>
+          </div>
+
+          <div class="accordion-item">
+            <button class="accordion-trigger">
+              <span>🟡</span>
+              <span>Dev server not syncing changes</span>
+              <span class="accordion-chevron">▾</span>
+            </button>
+            <div class="accordion-body">
+              <p>File watchers can fail on large projects or when hot-reloading stalls. Try:</p>
+              <div class="code-block" style="margin:8px 0">
+                <div class="code-header"><span class="code-label">Fix</span><button class="copy-btn"><svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="1" y="3" width="7" height="7" rx="1.2"/><path d="M3 3V2a1 1 0 011-1h5a1 1 0 011 1v6a1 1 0 01-1 1H8"/></svg> Copy</button></div>
+                <pre><code><span class="t-cmt"># Stop server (Ctrl+C), then restart</span>
+<span class="t-cmd">shopify theme dev <span class="t-flag">--verbose</span></span>
+<span class="t-cmt"># On Linux, increase file watcher limit:</span>
+<span class="t-cmd">echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf</span>
+<span class="t-cmd">sudo sysctl -p</span></code></pre>
+              </div>
+            </div>
+          </div>
+
+          <div class="accordion-item">
+            <button class="accordion-trigger">
+              <span>🔴</span>
+              <span>Authentication expired / token invalid</span>
+              <span class="accordion-chevron">▾</span>
+            </button>
+            <div class="accordion-body">
+              <div class="code-block" style="margin:8px 0">
+                <div class="code-header"><span class="code-label">Fix</span><button class="copy-btn"><svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="1" y="3" width="7" height="7" rx="1.2"/><path d="M3 3V2a1 1 0 011-1h5a1 1 0 011 1v6a1 1 0 01-1 1H8"/></svg> Copy</button></div>
+                <pre><code><span class="t-cmd">shopify auth logout</span>
+<span class="t-cmd">shopify auth login</span>
+<span class="t-cmt"># If using .env token, regenerate it in Partners dashboard</span></code></pre>
+              </div>
+            </div>
+          </div>
+
+          <div class="accordion-item">
+            <button class="accordion-trigger">
+              <span>🟡</span>
+              <span>Push fails: "Cannot push to live theme"</span>
+              <span class="accordion-chevron">▾</span>
+            </button>
+            <div class="accordion-body">
+              <p>CLI requires explicit permission to push to the published live theme.</p>
+              <div class="code-block" style="margin:8px 0">
+                <div class="code-header"><span class="code-label">Fix</span><button class="copy-btn"><svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="1" y="3" width="7" height="7" rx="1.2"/><path d="M3 3V2a1 1 0 011-1h5a1 1 0 011 1v6a1 1 0 01-1 1H8"/></svg> Copy</button></div>
+                <pre><code><span class="t-cmt"># Use --allow-live flag to confirm intent</span>
+<span class="t-cmd">shopify theme push <span class="t-flag">--allow-live</span></span>
+<span class="t-cmt"># Or push as unpublished (safer)</span>
+<span class="t-cmd">shopify theme push <span class="t-flag">--unpublished</span></span></code></pre>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================================================
+           18. BEST PRACTICES
+           ==================================================== -->
+      <section class="doc-section reveal" id="best-practices">
+        <div class="section-head">
+          <div class="section-icon-box">★</div>
+          <div class="section-meta">
+            <div class="section-eyebrow">Section 18</div>
+            <h2 class="section-title">Best Practices</h2>
+            <p class="section-desc">Proven patterns from real Shopify theme development teams.</p>
+          </div>
+        </div>
+
+        <div class="two-col">
+          <div class="two-col-item">
+            <h4>✅ Do</h4>
+            <ul style="font-size:13.5px;color:var(--text-secondary);line-height:2.1">
+              <li>Always pull before pushing</li>
+              <li>Use unpublished pushes for review</li>
+              <li>Lint with <code>theme check</code> before deploy</li>
+              <li>Keep <code>.env</code> out of Git</li>
+              <li>Use atomic Git commits</li>
+              <li>Tag releases with semver</li>
+              <li>Use <code>.shopifyignore</code></li>
+              <li>Test in multiple browsers</li>
+              <li>Use dev themes, not the live theme</li>
+              <li>Document your branching strategy</li>
+            </ul>
+          </div>
+          <div class="two-col-item">
+            <h4>❌ Avoid</h4>
+            <ul style="font-size:13.5px;color:var(--text-secondary);line-height:2.1">
+              <li>Pushing directly to live theme</li>
+              <li>Committing <code>.env</code> or secrets</li>
+              <li>Editing live theme in browser during dev</li>
+              <li><code>sudo npm install -g</code></li>
+              <li>Ignoring merge conflicts</li>
+              <li>Pushing without <code>theme check</code></li>
+              <li>Working without Git branches</li>
+              <li>Skipping the PR review step</li>
+              <li>Large untested pushes to production</li>
+              <li>Overriding team merge decisions alone</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================================================
+           19. VS CODE SETUP
+           ==================================================== -->
+      <section class="doc-section reveal" id="vscode">
+        <div class="section-head">
+          <div class="section-icon-box">◻</div>
+          <div class="section-meta">
+            <div class="section-eyebrow">Section 19</div>
+            <h2 class="section-title">VS Code Setup</h2>
+            <p class="section-desc">Recommended extensions and settings for Shopify theme development in VS Code.</p>
+          </div>
+        </div>
+
+        <h3>Recommended extensions</h3>
+        <div class="card-grid stagger">
+          <div class="card">
+            <div class="card-icon">💧</div>
+            <div class="card-title">Shopify Liquid</div>
+            <div class="card-desc">Official extension — syntax highlighting, hover docs, and autocomplete for Liquid.</div>
+          </div>
+          <div class="card">
+            <div class="card-icon">✨</div>
+            <div class="card-title">Prettier</div>
+            <div class="card-desc">Auto-format Liquid, JS, CSS, and JSON on save. Install the Liquid Prettier plugin.</div>
+          </div>
+          <div class="card">
+            <div class="card-icon">🔍</div>
+            <div class="card-title">Theme Check</div>
+            <div class="card-desc">Inline Liquid linting directly in the editor. Shows errors without running CLI manually.</div>
+          </div>
+          <div class="card">
+            <div class="card-icon">⑂</div>
+            <div class="card-title">GitLens</div>
+            <div class="card-desc">Enhanced Git integration — file blame, history, compare, and team insights.</div>
+          </div>
+          <div class="card">
+            <div class="card-icon">🔐</div>
+            <div class="card-title">DotENV</div>
+            <div class="card-desc">Syntax highlighting for <code>.env</code> files. Simple but useful.</div>
+          </div>
+          <div class="card">
+            <div class="card-icon">📏</div>
+            <div class="card-title">ESLint</div>
+            <div class="card-desc">Catch JavaScript quality issues in your theme's <code>assets/</code> scripts.</div>
+          </div>
+        </div>
+
+        <h3>Recommended .vscode/settings.json</h3>
+        <div class="code-block">
+          <div class="code-header">
+            <div class="window-dots"><span class="window-dot"></span><span class="window-dot"></span><span class="window-dot"></span></div>
+            <span class="code-label">.vscode/settings.json</span>
+            <button class="copy-btn">
+              <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="1" y="3" width="7" height="7" rx="1.2"/><path d="M3 3V2a1 1 0 011-1h5a1 1 0 011 1v6a1 1 0 01-1 1H8"/></svg>
+              Copy
+            </button>
+          </div>
+          <pre><code>{
+  <span class="t-str">"editor.formatOnSave"</span><span class="t-op">:</span> <span class="t-kw">true</span>,
+  <span class="t-str">"editor.defaultFormatter"</span><span class="t-op">:</span> <span class="t-str">"esbenp.prettier-vscode"</span>,
+  <span class="t-str">"[liquid]"</span><span class="t-op">:</span> {
+    <span class="t-str">"editor.defaultFormatter"</span><span class="t-op">:</span> <span class="t-str">"Shopify.theme-check-vscode"</span>
+  },
+  <span class="t-str">"editor.tabSize"</span><span class="t-op">:</span> <span class="t-num">2</span>,
+  <span class="t-str">"files.associations"</span><span class="t-op">:</span> {
+    <span class="t-str">"*.liquid"</span><span class="t-op">:</span> <span class="t-str">"liquid"</span>
+  },
+  <span class="t-str">"editor.wordWrap"</span><span class="t-op">:</span> <span class="t-str">"on"</span>,
+  <span class="t-str">"editor.rulers"</span><span class="t-op">:</span> [<span class="t-num">100</span>]
+}</code></pre>
+        </div>
+      </section>
+
+      <!-- ====================================================
+           20. CHEATSHEET
+           ==================================================== -->
+      <section class="doc-section reveal" id="cheatsheet">
+        <div class="section-head">
+          <div class="section-icon-box">⚡</div>
+          <div class="section-meta">
+            <div class="section-eyebrow">Section 20</div>
+            <h2 class="section-title">Cheatsheet</h2>
+            <p class="section-desc">All essential commands in one place. Click any card to copy.</p>
+          </div>
+        </div>
+
+        <!-- Filter tabs -->
+        <div class="filter-tabs">
+          <button class="filter-tab active" data-filter="all">All</button>
+          <button class="filter-tab" data-filter="install">Install</button>
+          <button class="filter-tab" data-filter="auth">Auth</button>
+          <button class="filter-tab" data-filter="theme">Theme</button>
+          <button class="filter-tab" data-filter="git">Git</button>
+        </div>
+
+        <div class="cheat-grid">
+          <!-- Install -->
+          <div class="cheat-card" data-cmd="npm install -g @shopify/cli @shopify/theme" data-cat="install">
+            <div class="cheat-label">Install CLI</div>
+            <div class="cheat-cmd">npm install -g @shopify/cli</div>
+            <div class="cheat-copied-overlay">✓ Copied!</div>
+          </div>
+          <div class="cheat-card" data-cmd="npm update -g @shopify/cli @shopify/theme" data-cat="install">
+            <div class="cheat-label">Update CLI</div>
+            <div class="cheat-cmd">npm update -g @shopify/cli</div>
+            <div class="cheat-copied-overlay">✓ Copied!</div>
+          </div>
+          <div class="cheat-card" data-cmd="shopify version" data-cat="install">
+            <div class="cheat-label">Check Version</div>
+            <div class="cheat-cmd">shopify version</div>
+            <div class="cheat-copied-overlay">✓ Copied!</div>
+          </div>
+
+          <!-- Auth -->
+          <div class="cheat-card" data-cmd="shopify auth login" data-cat="auth">
+            <div class="cheat-label">Login</div>
+            <div class="cheat-cmd">shopify auth login</div>
+            <div class="cheat-copied-overlay">✓ Copied!</div>
+          </div>
+          <div class="cheat-card" data-cmd="shopify auth logout" data-cat="auth">
+            <div class="cheat-label">Logout</div>
+            <div class="cheat-cmd">shopify auth logout</div>
+            <div class="cheat-copied-overlay">✓ Copied!</div>
+          </div>
+          <div class="cheat-card" data-cmd="shopify whoami" data-cat="auth">
+            <div class="cheat-label">Who Am I</div>
+            <div class="cheat-cmd">shopify whoami</div>
+            <div class="cheat-copied-overlay">✓ Copied!</div>
+          </div>
+
+          <!-- Theme -->
+          <div class="cheat-card" data-cmd="shopify theme dev" data-cat="theme">
+            <div class="cheat-label">Dev Server</div>
+            <div class="cheat-cmd">shopify theme dev</div>
+            <div class="cheat-copied-overlay">✓ Copied!</div>
+          </div>
+          <div class="cheat-card" data-cmd="shopify theme pull" data-cat="theme">
+            <div class="cheat-label">Pull Theme</div>
+            <div class="cheat-cmd">shopify theme pull</div>
+            <div class="cheat-copied-overlay">✓ Copied!</div>
+          </div>
+          <div class="cheat-card" data-cmd="shopify theme push" data-cat="theme">
+            <div class="cheat-label">Push Theme</div>
+            <div class="cheat-cmd">shopify theme push</div>
+            <div class="cheat-copied-overlay">✓ Copied!</div>
+          </div>
+          <div class="cheat-card" data-cmd="shopify theme push --unpublished" data-cat="theme">
+            <div class="cheat-label">Push Unpublished</div>
+            <div class="cheat-cmd">shopify theme push --unpublished</div>
+            <div class="cheat-copied-overlay">✓ Copied!</div>
+          </div>
+          <div class="cheat-card" data-cmd="shopify theme list" data-cat="theme">
+            <div class="cheat-label">List Themes</div>
+            <div class="cheat-cmd">shopify theme list</div>
+            <div class="cheat-copied-overlay">✓ Copied!</div>
+          </div>
+          <div class="cheat-card" data-cmd="shopify theme publish --theme=THEME_ID" data-cat="theme">
+            <div class="cheat-label">Publish Theme</div>
+            <div class="cheat-cmd">shopify theme publish</div>
+            <div class="cheat-copied-overlay">✓ Copied!</div>
+          </div>
+          <div class="cheat-card" data-cmd="shopify theme check" data-cat="theme">
+            <div class="cheat-label">Theme Check</div>
+            <div class="cheat-cmd">shopify theme check</div>
+            <div class="cheat-copied-overlay">✓ Copied!</div>
+          </div>
+          <div class="cheat-card" data-cmd="shopify theme check --auto-correct" data-cat="theme">
+            <div class="cheat-label">Auto Fix</div>
+            <div class="cheat-cmd">shopify theme check --auto-correct</div>
+            <div class="cheat-copied-overlay">✓ Copied!</div>
+          </div>
+          <div class="cheat-card" data-cmd="shopify theme open" data-cat="theme">
+            <div class="cheat-label">Open Preview</div>
+            <div class="cheat-cmd">shopify theme open</div>
+            <div class="cheat-copied-overlay">✓ Copied!</div>
+          </div>
+          <div class="cheat-card" data-cmd="shopify theme editor" data-cat="theme">
+            <div class="cheat-label">Theme Editor</div>
+            <div class="cheat-cmd">shopify theme editor</div>
+            <div class="cheat-copied-overlay">✓ Copied!</div>
+          </div>
+          <div class="cheat-card" data-cmd="shopify theme share" data-cat="theme">
+            <div class="cheat-label">Share Preview</div>
+            <div class="cheat-cmd">shopify theme share</div>
+            <div class="cheat-copied-overlay">✓ Copied!</div>
+          </div>
+          <div class="cheat-card" data-cmd="shopify theme delete --theme=THEME_ID" data-cat="theme">
+            <div class="cheat-label">Delete Theme</div>
+            <div class="cheat-cmd">shopify theme delete</div>
+            <div class="cheat-copied-overlay">✓ Copied!</div>
+          </div>
+          <div class="cheat-card" data-cmd="shopify theme package" data-cat="theme">
+            <div class="cheat-label">Package Theme</div>
+            <div class="cheat-cmd">shopify theme package</div>
+            <div class="cheat-copied-overlay">✓ Copied!</div>
+          </div>
+
+          <!-- Git -->
+          <div class="cheat-card" data-cmd="git stash push -m 'WIP description'" data-cat="git">
+            <div class="cheat-label">Stash Work</div>
+            <div class="cheat-cmd">git stash push -m 'WIP'</div>
+            <div class="cheat-copied-overlay">✓ Copied!</div>
+          </div>
+          <div class="cheat-card" data-cmd="git stash pop" data-cat="git">
+            <div class="cheat-label">Restore Stash</div>
+            <div class="cheat-cmd">git stash pop</div>
+            <div class="cheat-copied-overlay">✓ Copied!</div>
+          </div>
+          <div class="cheat-card" data-cmd="git log --oneline -10" data-cat="git">
+            <div class="cheat-label">Recent Commits</div>
+            <div class="cheat-cmd">git log --oneline -10</div>
+            <div class="cheat-copied-overlay">✓ Copied!</div>
+          </div>
+          <div class="cheat-card" data-cmd="git revert HEAD" data-cat="git">
+            <div class="cheat-label">Revert Last</div>
+            <div class="cheat-cmd">git revert HEAD</div>
+            <div class="cheat-copied-overlay">✓ Copied!</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Content footer -->
+      <footer class="content-footer">
+        <div class="footer-links">
+          <a href="https://shopify.dev/docs/api/shopify-cli" target="_blank" rel="noopener" class="footer-link">Official CLI Docs ↗</a>
+          <a href="https://shopify.dev/docs/themes" target="_blank" rel="noopener" class="footer-link">Theme Dev Docs ↗</a>
+          <a href="https://github.com/Shopify/cli" target="_blank" rel="noopener" class="footer-link">GitHub ↗</a>
+        </div>
+        <div class="footer-copy">Built for Shopify developers · Not affiliated with Shopify Inc.</div>
+      </footer>
+
+    </main><!-- /content -->
+  </div><!-- /main -->
+</div><!-- /app-shell -->
+
+<!-- Toast notification -->
+<div class="toast" id="toast" role="status" aria-live="polite">
+  <span class="toast-check">✓</span>
+  <span class="toast-text">Copied to clipboard</span>
+</div>
+
+<!-- Scripts (theme first, then search, then main) -->
+<script src="assets/js/theme.js"></script>
+<script src="assets/js/search.js"></script>
+<script src="assets/js/main.js"></script>
+
+</body>
+</html>
